@@ -32,6 +32,8 @@ MAX_LOG_ENTRIES = 500
 USB_CONFIG_INTERFACE = 1
 USB_OUT_ENDPOINT = 0x02
 USB_OUT_PACKET_SIZE = 64
+REPORT_PACE_DELAY_S = 0.003
+KEY_COMMIT_DELAY_S = 0.01
 
 
 class MiniKeyboardError(RuntimeError):
@@ -405,6 +407,8 @@ class MiniKeyboardDevice:
                 raise ProtocolError(f"HID write returned {written} bytes")
             if self._transport == "usb":
                 # USB interrupt OUT usually returns endpoint packet size (64 bytes here).
+                if REPORT_PACE_DELAY_S > 0:
+                    time.sleep(REPORT_PACE_DELAY_S)
                 return written
             write_buffer = [report_id & 0xFF] + [b & 0xFF for b in data8]
             if written not in (len(write_buffer), len(data8)):
@@ -412,6 +416,8 @@ class MiniKeyboardDevice:
                     "HID write length mismatch: "
                     f"wrote {written}, expected {len(write_buffer)} or {len(data8)}"
                 )
+            if REPORT_PACE_DELAY_S > 0:
+                time.sleep(REPORT_PACE_DELAY_S)
             return written
 
     def read_reports(
@@ -528,6 +534,7 @@ class MiniKeyboardDevice:
         if not isinstance(keys, list):
             raise ProtocolError("config.keys must be a list")
 
+        written_keys = 0
         for key in keys:
             if not isinstance(key, dict):
                 raise ProtocolError("Each config.keys item must be an object")
@@ -569,7 +576,11 @@ class MiniKeyboardDevice:
             else:
                 raise ProtocolError(f"key_num {key_num}: unknown type '{key_type}'")
 
-        self.write_flash()
+            # Commit each key immediately for firmware compatibility.
+            self.write_flash()
+            written_keys += 1
+            if KEY_COMMIT_DELAY_S > 0:
+                time.sleep(KEY_COMMIT_DELAY_S)
 
         if config.get("led_mode") is not None:
             self.set_led(int(config["led_mode"]))
@@ -578,7 +589,7 @@ class MiniKeyboardDevice:
         return {
             "ok": True,
             "report_id": self._report_id,
-            "written_keys": len(keys),
+            "written_keys": written_keys,
             "led_mode": config.get("led_mode"),
         }
 

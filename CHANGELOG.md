@@ -39,3 +39,9 @@
   - Removed machine-specific private path references and replaced with placeholders.
 - Added import-ready sample profile `media-presets.json` (media mapping preset for all 6 keys).
 - Updated README with a `Sample Import Profile` section referencing `media-presets.json`.
+- Improved HID write robustness for knob/media stability:
+  - Added short pacing delay between report writes.
+  - Changed config write flow to commit (`AA AA`) after each key update (reference-style per-key persistence).
+- Added `PROMPTS.md` with:
+  - original kickoff prompt (verbatim)
+  - generalized process guidance for similar projects.

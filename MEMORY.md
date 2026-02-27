@@ -56,7 +56,10 @@ Build a local macOS HID configurator for MiniKeyboard (3 buttons + knob actions)
 - 2026-02-27: Runtime smoke-tested FastAPI startup and API status endpoint in local venv.
 - 2026-02-27: Added one-command `run-mac.sh` and polished README with quick-run, screenshot, and local-security notes.
 - 2026-02-27: Added `media-presets.json` sample import profile and linked it in README.
+- 2026-02-27: Added paced HID report writes and per-key flash commit in `write_config` to improve firmware write stability (notably knob behavior).
+- 2026-02-27: Added `PROMPTS.md` documenting project origin, exact first prompt, and reusable project process template.
 
 ## Release Notes Snapshot
 - v0.1.0 drafted in `RELEASE_NOTES.md`.
 - v0.1.1 drafted in `RELEASE_NOTES.md`.
+- v0.0.2-beta drafted in `RELEASE_NOTES.md`.

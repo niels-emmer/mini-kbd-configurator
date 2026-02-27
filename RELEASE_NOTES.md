@@ -1,5 +1,23 @@
 # Release Notes
 
+## v0.0.2-beta (2026-02-27)
+
+Beta update focused on write stability and project transparency docs.
+
+### Highlights
+
+- Improved HID write stability for programmed mappings:
+  - Added small pacing delay between report writes.
+  - Changed full config write flow to commit each key immediately (`AA AA`) for better firmware compatibility.
+- Added `PROMPTS.md` documenting:
+  - rough project origin
+  - exact initial implementation prompt (verbatim)
+  - generalized reusable process for similar agent-built local tools.
+
+### Notes
+
+- This remains a local-only beta utility and should not be exposed publicly.
+
 ## v0.1.1 (2026-02-27)
 
 Documentation and packaging polish for easier local use on macOS.
@@ -17,6 +35,9 @@ Documentation and packaging polish for easier local use on macOS.
   - local-only security guidance and exposure warnings
   - project status note (agentically/vibe coded, lightly tested)
 - Removed user-specific/private path references from setup docs.
+- Added write-stability improvements in HID backend:
+  - short pacing delay between report writes
+  - per-key flash commit during full profile write for firmware compatibility
 
 ## v0.1.0 (2026-02-27)
 
