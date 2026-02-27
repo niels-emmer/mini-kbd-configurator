@@ -126,13 +126,14 @@ Important limitation:
 - Server binds to `127.0.0.1` by default.
 - Do not expose this service publicly.
 - No authentication/authorization layer is included.
-- Input validation is present for config payload shape/ranges, but this is still a local utility, not a hardened internet service.
+- Input validation covers config payload shape and value ranges.
+- This project is a local utility and does not include internet-facing hardening.
 
 ## Project Status
 
 - Agentically/vibe coded.
 - Lightly tested on macOS with one device family and expected protocol behavior.
-- You should treat this as a practical tool, not a formally verified production system.
+- Treat this as a practical tool with limited validation coverage.
 
 ## Troubleshooting
 

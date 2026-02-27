@@ -4,7 +4,7 @@
 
 This project started from a single, high-constraint implementation prompt: local-only, protocol-accurate, macOS-focused, and fully runnable for a real USB HID device.  
 
-What made it workable was not just code generation, but an iterative loop:
+What made it workable was a structured iterative loop that combined code generation with validation:
 
 1. Start with strict technical constraints and concrete deliverables.
 2. Build a thin end-to-end version quickly.
@@ -136,7 +136,8 @@ This shortens debug loops dramatically once real users test.
 
 ### 5) Test on Real Target Environment
 
-- Emulators and unit tests are useful, but hardware/software edge cases appear only in real usage.
+- Emulators and unit tests are useful.
+- Hardware/software edge cases appear during real usage on the target environment.
 - Keep testing loops short: small change -> run -> test on device -> observe.
 
 ### 6) Package for One-Command Run
@@ -174,7 +175,7 @@ This shortens debug loops dramatically once real users test.
 
 ### 10) Expect Post-Launch Behavior Fixes
 
-- Initial versions often work functionally but need tuning (timing, retries, UX edge cases).
+- Initial versions are often functionally correct and still need tuning (timing, retries, UX edge cases).
 - Plan to iterate based on observed behavior, not assumptions.
 
 ## Reusable Prompt Skeleton (Copy/Paste)

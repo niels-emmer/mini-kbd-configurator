@@ -57,4 +57,5 @@ Initial working local configurator for MiniKeyboard on macOS.
 
 ### Notes
 
-- Full device config readback command is not documented in inspected reference sources; `GET /api/config` returns explicit in-process shadow state.
+- Inspected reference sources do not document a full device config readback command.
+- `GET /api/config` returns explicit in-process shadow state.
