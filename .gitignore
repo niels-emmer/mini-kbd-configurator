@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local working/reference folders not needed in public repo
+temp_build/
+temp_refs/
+
+# Local runtime logs
+*.log

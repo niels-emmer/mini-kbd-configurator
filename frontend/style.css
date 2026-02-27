@@ -1,0 +1,223 @@
+:root {
+  --bg-top: #f6f6e7;
+  --bg-bottom: #d6efe0;
+  --ink: #1a2a26;
+  --panel: #ffffffdd;
+  --line: #b5c8be;
+  --accent: #00684a;
+  --accent-2: #004b8f;
+  --error: #a71930;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Avenir Next", "Gill Sans", "Trebuchet MS", sans-serif;
+  background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+  min-height: 100vh;
+}
+
+.page {
+  width: min(1100px, 96vw);
+  margin: 1.2rem auto 2rem;
+}
+
+.hero {
+  padding: 1.2rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  letter-spacing: 0.03em;
+}
+
+.hero p {
+  margin: 0;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(6px);
+}
+
+.panel h2 {
+  margin: 0 0 0.8rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.hint {
+  color: #4f5f58;
+  font-size: 0.85rem;
+}
+
+input,
+select,
+button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+input,
+select {
+  padding: 0.45rem 0.5rem;
+  min-height: 2.2rem;
+}
+
+button {
+  min-height: 2.2rem;
+  padding: 0.45rem 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: white;
+  background: linear-gradient(160deg, var(--accent), var(--accent-2));
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.status {
+  display: inline-block;
+  margin: 0;
+  font-weight: 800;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+}
+
+.status-online {
+  color: #0f5d3d;
+  background: #d7f7e9;
+}
+
+.status-offline {
+  color: #7f1d2f;
+  background: #ffe4ea;
+}
+
+.key-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.8rem;
+}
+
+.key-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem;
+  background: #fff;
+}
+
+.key-card h3 {
+  margin: 0 0 0.7rem;
+  font-size: 1rem;
+}
+
+.card-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.55rem;
+  align-items: center;
+}
+
+.stroke-list {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 0.4rem;
+}
+
+.stroke-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.stroke-row .stroke-keycode {
+  flex: 1 1 180px;
+  min-width: 160px;
+}
+
+.stroke-row label {
+  white-space: nowrap;
+}
+
+.stroke-row button {
+  padding: 0.25rem 0.45rem;
+  min-height: 1.8rem;
+  background: var(--error);
+  margin-left: auto;
+}
+
+.mode-section {
+  display: none;
+}
+
+.mode-section.active {
+  display: block;
+}
+
+.log {
+  margin: 0;
+  max-height: 340px;
+  overflow: auto;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 0.8rem;
+  background: #0f1d18;
+  color: #d8f3e8;
+  font-size: 0.83rem;
+  line-height: 1.35;
+  font-family: "Menlo", "Consolas", monospace;
+}
+
+.log-details summary {
+  cursor: pointer;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.log-details[open] summary {
+  margin-bottom: 0.8rem;
+}
+
+.log .error {
+  color: #ffb8c5;
+}
+
+.log .success {
+  color: #9bf2bf;
+}
+
+@media (max-width: 720px) {
+  .stroke-row button {
+    margin-left: 0;
+  }
+}

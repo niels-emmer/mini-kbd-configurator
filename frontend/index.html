@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mini Keyboard Local Configurator</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <h1>Mini Keyboard Configurator</h1>
+        <p>
+          Local-only HID configuration for VID <code>0x1189</code> / PID <code>0x8890</code>.
+          Browser talks to <code>http://localhost:8787/api/*</code>.
+        </p>
+      </header>
+
+      <section class="panel">
+        <h2>Device</h2>
+        <div class="row">
+          <button id="findDevicesBtn" type="button">Find Device</button>
+          <select id="deviceSelect"></select>
+          <button id="connectBtn" type="button">Connect</button>
+          <button id="disconnectBtn" type="button">Disconnect</button>
+        </div>
+        <p id="statusLine" class="status status-offline">Disconnected</p>
+      </section>
+
+      <section class="panel">
+        <h2>Configuration</h2>
+        <div class="row">
+          <label>
+            Layer
+            <input id="layerInput" type="number" min="1" max="3" value="1" />
+          </label>
+          <label>
+            Lights
+            <select id="ledModeSelect">
+              <option value="">No Change</option>
+              <option value="0">Off</option>
+              <option value="1">Pattern 1</option>
+              <option value="2">Pattern 2</option>
+            </select>
+          </label>
+          <button id="readConfigBtn" type="button">Read Config</button>
+          <button id="writeConfigBtn" type="button">Write Config</button>
+          <button id="testBtn" type="button">Test Command</button>
+        </div>
+        <div class="row">
+          <button id="exportProfileBtn" type="button">Export Profile</button>
+          <button id="importProfileBtn" type="button">Import Profile</button>
+          <input id="importProfileInput" type="file" accept="application/json,.json" hidden />
+          <span class="hint">Profiles are JSON files (layer, lights, and key mappings).</span>
+        </div>
+
+        <div id="keyCards" class="key-grid"></div>
+      </section>
+
+      <section class="panel">
+        <details class="log-details">
+          <summary>Debug Log</summary>
+          <pre id="logPanel" class="log"></pre>
+        </details>
+      </section>
+    </main>
+
+    <script src="/assets/app.js" type="module"></script>
+  </body>
+</html>

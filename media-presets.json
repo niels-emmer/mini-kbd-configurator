@@ -1,0 +1,42 @@
+{
+  "layer": 1,
+  "led_mode": null,
+  "keys": [
+    {
+      "key_num": 1,
+      "type": "media",
+      "code1": 182,
+      "code2": 0
+    },
+    {
+      "key_num": 2,
+      "type": "media",
+      "code1": 205,
+      "code2": 0
+    },
+    {
+      "key_num": 3,
+      "type": "media",
+      "code1": 181,
+      "code2": 0
+    },
+    {
+      "key_num": 13,
+      "type": "media",
+      "code1": 234,
+      "code2": 0
+    },
+    {
+      "key_num": 14,
+      "type": "media",
+      "code1": 226,
+      "code2": 0
+    },
+    {
+      "key_num": 15,
+      "type": "media",
+      "code1": 233,
+      "code2": 0
+    }
+  ]
+}

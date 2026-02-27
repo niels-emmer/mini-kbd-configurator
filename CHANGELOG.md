@@ -1,0 +1,41 @@
+# Changelog
+
+## 2026-02-27
+
+- Created local macOS MiniKeyboard configurator project scaffold.
+- Implemented HID protocol layer in `backend/hid_device.py` using `hid` (hidapi):
+  - Device enumeration for VID/PID `0x1189:0x8890`
+  - Path-based open/close
+  - Compatibility handling for both `hid.device()` and `hid.Device(...)` APIs
+  - Automatic USB fallback transport via `pyusb` (interface `1`, endpoint `0x02`) when macOS/hidapi report writes are blocked
+  - Report-ID detection order `3,0,2`
+  - 8-byte report writes with report-id-prefixed hidapi buffers
+  - Key/media/mouse/flash/LED command writers matching reference code
+  - Shadow config storage and transaction logging
+  - Diagnostics CLI (`python -m backend.hid_device --dump`)
+- Implemented FastAPI backend in `backend/main.py`:
+  - Endpoints: `/api/devices`, `/api/connect`, `/api/disconnect`, `/api/config` (GET/POST), `/api/test`, `/api/status`, `/api/logs`
+  - Single-device manager with locking
+  - Static frontend serving at `/`
+- Implemented frontend UI in `frontend/index.html`, `frontend/app.js`, `frontend/style.css`:
+  - Device discovery/connect/disconnect
+  - Config form for all 6 key actions (3 buttons + knob left/press/right)
+  - Read config (shadow), write config, test command
+  - Request/response + HID transaction debug panel
+- Added project memory tracking in `MEMORY.md`.
+- Added setup/run/protocol/security/troubleshooting documentation in `README.md`.
+- Verified startup with local venv and successful `/api/status` response from Uvicorn.
+- Added one-command macOS launcher script `run-mac.sh`:
+  - Dependency checks for `python3` and `curl`
+  - Homebrew native dependency install for `hidapi` + `libusb` (when Homebrew exists)
+  - venv setup + `pip install -r requirements.txt`
+  - Local server start on `127.0.0.1:8787` and auto-open browser
+  - Optional env overrides: `APP_PORT`, `UVICORN_RELOAD`
+- Added `docs/screenshot.png` and updated README with screenshot section.
+- Reworked README for casual users:
+  - Added `Quick Run On Your Mac` section using `./run-mac.sh`
+  - Added local-only security warnings and non-public exposure guidance
+  - Added project status note (agentically/vibe coded, lightly tested)
+  - Removed machine-specific private path references and replaced with placeholders.
+- Added import-ready sample profile `media-presets.json` (media mapping preset for all 6 keys).
+- Updated README with a `Sample Import Profile` section referencing `media-presets.json`.
