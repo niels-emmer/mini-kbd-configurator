@@ -30,6 +30,9 @@ Build a local macOS HID configurator for MiniKeyboard (3 buttons + knob actions)
 - Implement `/api/config` read as shadow-state due no documented readback command in inspected reference JS.
 - Add automatic USB interrupt-OUT fallback (`interface 1`, endpoint `0x02`) when hidapi report writes fail on macOS.
 - Add one-command launcher `run-mac.sh` to standardize macOS setup/run from Terminal or iTerm.
+- Add a pytest suite that uses fake HID/USB handles so protocol framing, config write flow, report-ID detection, enumeration merge, and the HTTP API are verified without hardware.
+- Add GitHub Actions CI (native HID libs + pytest) so regressions are caught on push/PR.
+- Keep the frontend DOM contract stable (element ids + CSS class names) so a styling-only refresh never requires touching `frontend/app.js`.
 
 ## Implemented Files
 - `backend/hid_device.py`
@@ -39,12 +42,22 @@ Build a local macOS HID configurator for MiniKeyboard (3 buttons + knob actions)
 - `frontend/app.js`
 - `frontend/style.css`
 - `requirements.txt`
+- `requirements-dev.txt`
+- `pytest.ini`
+- `tests/conftest.py`
+- `tests/test_hid_device.py`
+- `tests/test_api.py`
+- `.github/workflows/ci.yml`
 - `run-mac.sh`
 - `docs/screenshot.png`
+- `docs/decision-log.md`
 - `media-presets.json`
 - `README.md`
 - `CHANGELOG.md`
 - `RELEASE_NOTES.md`
+- `SECURITY.md`
+- `CONTRIBUTING.md`
+- `.editorconfig`
 
 ## Open Risks
 - Different device firmware revisions may expose additional readback commands not covered by inspected sources.
@@ -52,6 +65,7 @@ Build a local macOS HID configurator for MiniKeyboard (3 buttons + knob actions)
 - macOS may block selected HID interfaces (`privilege violation` / `not permitted`) depending on system permissions and protected usage pages.
 
 ## Change Log Snapshot
+- 2026-10-22: Refresh pass — added pytest suite (40 tests, fake HID/USB handles), CI workflow, frontend restyle (light/dark, responsive, unchanged DOM contract), regenerated screenshot, and added decision-log/SECURITY/CONTRIBUTING/.editorconfig docs.
 - 2026-02-27: Complete initial implementation and docs.
 - 2026-02-27: Runtime smoke-tested FastAPI startup and API status endpoint in local venv.
 - 2026-02-27: Added one-command `run-mac.sh` and polished README with quick-run, screenshot, and local-security notes.
@@ -60,6 +74,7 @@ Build a local macOS HID configurator for MiniKeyboard (3 buttons + knob actions)
 - 2026-02-27: Added `PROMPTS.md` documenting project origin, exact first prompt, and reusable project process template.
 
 ## Release Notes Snapshot
+- v0.2.0 drafted in `RELEASE_NOTES.md` (refresh: tests, CI, UI, docs).
 - v0.1.0 drafted in `RELEASE_NOTES.md`.
 - v0.1.1 drafted in `RELEASE_NOTES.md`.
 - v0.0.2-beta drafted in `RELEASE_NOTES.md`.

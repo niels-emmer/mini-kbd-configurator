@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-10-22
+
+Refresh pass: automated tests, CI, UI restyle, and documentation.
+
+- Added a pytest suite in `tests/` (40 tests, no hardware required; fake HID/USB handles):
+  - 8-byte command framing for key/media/mouse/flash/LED operations
+  - config write flow (per-key flash commit, LED sequence, shadow state)
+  - report-ID detection order and USB interrupt-OUT fallback packet padding
+  - HID enumeration merge behavior
+  - HTTP API status codes and error mapping
+- Added `requirements-dev.txt` (pytest, httpx) and `pytest.ini`.
+- Added GitHub Actions CI (`.github/workflows/ci.yml`) that installs native HID
+  libraries and runs the suite on every push and pull request.
+- Restyled the frontend (`frontend/index.html`, `frontend/style.css`):
+  - header with a connection status pill
+  - card-based panels, refined typography and focus states
+  - light + dark theme via `prefers-color-scheme`
+  - responsive single-column layout on narrow viewports
+  - element ids and the CSS class contract are unchanged, so `frontend/app.js` was not modified
+- Regenerated `docs/screenshot.png` from the refreshed UI.
+- Added `docs/decision-log.md` (ADR seed), `SECURITY.md`, `CONTRIBUTING.md`, and `.editorconfig`.
+- Updated `README.md`: Development section, API endpoint table, project layout,
+  and links to the new docs.
+
 ## 2026-02-27
 
 - Created local macOS MiniKeyboard configurator project scaffold.

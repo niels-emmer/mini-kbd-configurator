@@ -3,28 +3,31 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mini Keyboard Local Configurator</title>
+    <meta name="color-scheme" content="light dark" />
+    <title>Mini Keyboard Configurator</title>
     <link rel="stylesheet" href="/assets/style.css" />
   </head>
   <body>
     <main class="page">
       <header class="hero">
-        <h1>Mini Keyboard Configurator</h1>
-        <p>
-          Local-only HID configuration for VID <code>0x1189</code> / PID <code>0x8890</code>.
-          Browser talks to <code>http://localhost:8787/api/*</code>.
-        </p>
+        <div>
+          <h1>Mini Keyboard Configurator</h1>
+          <p>
+            Local-only HID configuration for VID <code>0x1189</code> / PID <code>0x8890</code>.
+            This page talks to <code>http://localhost:8787/api/*</code>.
+          </p>
+        </div>
+        <p id="statusLine" class="status status-offline">Disconnected</p>
       </header>
 
       <section class="panel">
         <h2>Device</h2>
         <div class="row">
           <button id="findDevicesBtn" type="button">Find Device</button>
-          <select id="deviceSelect"></select>
+          <select id="deviceSelect" aria-label="Detected MiniKeyboard devices"></select>
           <button id="connectBtn" type="button">Connect</button>
           <button id="disconnectBtn" type="button">Disconnect</button>
         </div>
-        <p id="statusLine" class="status status-offline">Disconnected</p>
       </section>
 
       <section class="panel">

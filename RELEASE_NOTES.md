@@ -1,5 +1,30 @@
 # Release Notes
 
+## v0.2.0 (2026-10-22)
+
+Refresh release: the configurator gains automated tests, CI, and a modern UI,
+with no protocol changes.
+
+### Highlights
+
+- **Automated tests** (`tests/`, 40 tests) covering:
+  - exact 8-byte command framing for key/media/mouse/flash/LED operations
+  - the config write flow (per-key flash commit, LED sequence, shadow state)
+  - report-ID detection order (`3, 0, 2`) and the USB interrupt-OUT fallback
+  - HID enumeration merging and HTTP API status/error mapping
+  - no hardware required; fake HID/USB handles are used
+- **CI** (`.github/workflows/ci.yml`) runs the suite on every push and PR.
+- **UI refresh**: a header with a connection status pill, card-based panels,
+  refined typography and focus states, light + dark themes, and a responsive
+  layout. The API and DOM contract are unchanged.
+- **Docs**: added `docs/decision-log.md` (ADRs), `SECURITY.md`, and
+  `CONTRIBUTING.md`; refreshed `README.md` and `docs/screenshot.png`.
+
+### Notes
+
+- Protocol behavior is unchanged; this release is tooling, UI, and docs.
+- Still a local-only utility. Do not expose it publicly (see `SECURITY.md`).
+
 ## v0.0.2-beta (2026-02-27)
 
 Beta update focused on write stability and project transparency docs.
