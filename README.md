@@ -1,6 +1,7 @@
 # Mini Keyboard Configurator (macOS, local-only)
 
-Local configurator for the AliExpress MiniKeyboard (3 buttons + 1 knob with left/press/right actions).
+Local configurator for the AliExpress MiniKeyboard (3 buttons + 1 knob with
+left/press/right actions).
 
 - Device: VID `0x1189`, PID `0x8890`
 - No browser WebHID usage
@@ -67,7 +68,8 @@ Then open `http://localhost:8787`.
 
 ## Sample Import Profile
 
-Use the included sample profile for the media preset layout shown in the screenshot:
+Use the included sample profile for the media preset layout shown in the
+screenshot:
 
 - `media-presets.json`
   - Button 1: Previous
@@ -95,14 +97,18 @@ python -m backend.hid_device --dump --path "hex:..."
 
 ## API Endpoints
 
-- `GET /api/status`
-- `GET /api/devices`
-- `POST /api/connect`
-- `POST /api/disconnect`
-- `GET /api/config`
-- `POST /api/config`
-- `POST /api/test`
-- `GET /api/logs`
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/status` | Connection state, detected report id, recent HID log |
+| `GET` | `/api/devices` | List matching HID devices |
+| `POST` | `/api/connect` | Open a device by `path` |
+| `POST` | `/api/disconnect` | Close the open device |
+| `GET` | `/api/config` | Read config (see limitation below) |
+| `POST` | `/api/config` | Write a full config to the device |
+| `POST` | `/api/test` | Send a no-op test command |
+| `GET` | `/api/logs` | Recent HID transactions |
+
+Interactive API docs are served at `/docs` (Swagger UI) and `/openapi.json`.
 
 ## Protocol Notes
 
@@ -117,8 +123,41 @@ Key details mirrored from the references:
 - command framing for key/media/mouse/flash/LED operations
 
 Important limitation:
-- The inspected WebHID configurator source does not document a full config readback command.
-- `GET /api/config` returns in-process shadow state and reports that explicitly.
+- The inspected WebHID configurator source does not document a full config
+  readback command.
+- `GET /api/config` returns in-process shadow state and reports that explicitly
+  (`supports_device_readback: false`, `source: "shadow"`).
+
+## Development
+
+Install dev dependencies and run the test suite:
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+The tests use fake HID/USB handles and do not require the physical device. They
+cover 8-byte command framing, the config write flow, report-ID detection, the USB
+interrupt-OUT fallback, enumeration merging, and the HTTP API.
+
+CI runs the same suite on every push and pull request
+(`.github/workflows/ci.yml`).
+
+Project layout:
+
+```
+backend/hid_device.py   HID protocol layer (transport, framing, config)
+backend/main.py         FastAPI app, device manager, REST endpoints
+frontend/               Static UI (index.html, app.js, style.css)
+tests/                  pytest suite (protocol + API)
+docs/decision-log.md    Architecture decisions (ADRs)
+docs/screenshot.png     Current UI screenshot
+run-mac.sh              One-command macOS launcher
+```
+
+See `CONTRIBUTING.md` for setup and change guidelines, and `SECURITY.md` for the
+security posture.
 
 ## Security + Exposure
 
