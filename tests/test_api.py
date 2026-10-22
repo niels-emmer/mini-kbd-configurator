@@ -5,6 +5,8 @@ The device manager is replaced per test so no real HID handle is opened.
 
 from __future__ import annotations
 
+import re
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -43,6 +45,41 @@ def test_assets_serve_frontend_files(client):
     js = client.get("/assets/app.js")
     assert js.status_code == 200
     assert "renderKeyCards" in js.text
+
+    # app.js is split into ES modules; every one must be reachable so the
+    # browser's module graph resolves (a bad import path 404s and breaks the UI).
+    modules = (
+        "lib/keys.js",
+        "lib/modifiers.js",
+        "lib/api.js",
+        "lib/layers.js",
+        "ui/keycards.js",
+        "ui/modes/key.js",
+        "ui/modes/media.js",
+        "ui/modes/mouse.js",
+    )
+    for module in modules:
+        res = client.get(f"/assets/{module}")
+        assert res.status_code == 200, module
+
+
+def test_frontend_module_imports_resolve():
+    """Every relative import in the frontend ES modules must resolve to a real file.
+
+    ``app.js`` is split into ES modules, so a wrong relative path 404s at runtime
+    and silently leaves the UI unrendered. Guard the whole module graph here.
+    """
+    pattern = re.compile(r"""import\s+(?:[^'"]*?\s+from\s+)?["'](\.[^"']+)["']""")
+    checked = 0
+    for path in sorted(backend_main.FRONTEND_DIR.rglob("*.js")):
+        source = path.read_text(encoding="utf-8")
+        for specifier in pattern.findall(source):
+            checked += 1
+            target = (path.parent / specifier).resolve()
+            assert target.is_file(), f"{path.name} imports missing {specifier}"
+
+    # Guard against the pattern silently matching nothing.
+    assert checked >= 8
 
 
 def test_openapi_schema_is_available(client):
