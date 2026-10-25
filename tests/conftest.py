@@ -47,10 +47,43 @@ class FakeUsbDevice:
 
     def __init__(self) -> None:
         self.packets: List[tuple] = []
+        self.configuration_calls = 0
+
+    def set_configuration(self) -> None:
+        self.configuration_calls += 1
 
     def write(self, endpoint: int, data: bytes, timeout: int = 0) -> int:
         self.packets.append((endpoint, bytes(data)))
         return len(data)
+
+
+class FakeUsbBackend:
+    """Stand-in for pyusb's ``core`` and ``util`` modules.
+
+    One instance doubles as both modules: ``find`` returns the configured device
+    (or ``None``), and interface claim/release/dispose calls are recorded so
+    tests can assert the USB fallback ran and what it did.
+    """
+
+    def __init__(self, device: Optional[FakeUsbDevice] = None) -> None:
+        self.device = device
+        self.find_calls = 0
+        self.claim_calls: List[int] = []
+        self.release_calls: List[int] = []
+        self.disposed: List[object] = []
+
+    def find(self, **kwargs) -> Optional[FakeUsbDevice]:
+        self.find_calls += 1
+        return self.device
+
+    def claim_interface(self, device, interface: int) -> None:
+        self.claim_calls.append(interface)
+
+    def release_interface(self, device, interface: int) -> None:
+        self.release_calls.append(interface)
+
+    def dispose_resources(self, device) -> None:
+        self.disposed.append(device)
 
 
 @pytest.fixture

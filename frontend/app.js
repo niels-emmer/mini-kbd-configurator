@@ -25,11 +25,12 @@ const refs = {
   importProfileInput: document.getElementById("importProfileInput"),
 };
 
-function setConnectedStatus(connected, reportId = null) {
+function setConnectedStatus(connected, reportId = null, transport = null) {
   state.connected = connected;
   state.reportId = reportId;
   if (connected) {
-    refs.statusLine.textContent = `Connected (Report ID ${reportId})`;
+    const via = transport ? ` via ${transport}` : "";
+    refs.statusLine.textContent = `Connected${via} (Report ID ${reportId})`;
     refs.statusLine.className = "status status-online";
   } else {
     refs.statusLine.textContent = "Disconnected";
@@ -71,7 +72,7 @@ async function connectDevice() {
   }
 
   const data = await api("/api/connect", { method: "POST", body: { path } });
-  setConnectedStatus(true, data.report_id);
+  setConnectedStatus(true, data.report_id, data.transport);
 }
 
 async function disconnectDevice() {
@@ -136,7 +137,7 @@ async function testCommand() {
 async function loadStatus() {
   try {
     const status = await api("/api/status");
-    setConnectedStatus(Boolean(status.connected), status.report_id);
+    setConnectedStatus(Boolean(status.connected), status.report_id, status.transport);
   } catch (err) {
     log(`status check failed: ${err.message}`, "error");
   }

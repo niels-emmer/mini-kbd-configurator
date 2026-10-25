@@ -250,6 +250,43 @@ def test_usb_transport_pads_to_endpoint_packet_size(monkeypatch):
     assert list(packet[:9]) == [3, 1, 2, 3, 4, 5, 6, 7, 8]
 
 
+def test_open_usb_claims_interface_and_reports_transport(monkeypatch):
+    from tests.conftest import FakeUsbBackend, FakeUsbDevice
+
+    backend = FakeUsbBackend(FakeUsbDevice())
+    monkeypatch.setattr(hid_device, "usb_core", backend)
+    monkeypatch.setattr(hid_device, "usb_util", backend)
+
+    dev = hid_device.MiniKeyboardDevice()
+    info = dev.open_usb()
+
+    assert dev.transport == "usb"
+    assert dev.connected is True
+    assert info["transport"] == "usb"
+    assert backend.claim_calls == [hid_device.USB_CONFIG_INTERFACE]
+
+
+def test_detect_report_id_falls_back_to_usb(monkeypatch):
+    """hidapi rejects every probe -> the probe runs over the USB endpoint."""
+    monkeypatch.setattr(hid_device, "REPORT_PACE_DELAY_S", 0.0)
+    from tests.conftest import FakeHidDevice, FakeUsbBackend, FakeUsbDevice
+
+    dev = hid_device.MiniKeyboardDevice()
+    dev._device = FakeHidDevice(ok_report_ids=set())
+    dev._transport = "hidapi"
+
+    usb = FakeUsbDevice()
+    backend = FakeUsbBackend(usb)
+    monkeypatch.setattr(hid_device, "usb_core", backend)
+    monkeypatch.setattr(hid_device, "usb_util", backend)
+
+    assert dev.detect_report_id() == 3
+    assert dev.transport == "usb"
+    assert usb.packets  # the probe was written over the USB endpoint
+    endpoint, _packet = usb.packets[0]
+    assert endpoint == hid_device.USB_OUT_ENDPOINT
+
+
 # ------------------------------------------------------------- enumeration merge
 
 
