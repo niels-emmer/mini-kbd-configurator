@@ -23,6 +23,15 @@ from backend.hid_device import (
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 
+# Actionable guidance appended to the macOS permission-denied connect error. The
+# device exposes keyboard/mouse HID collections, so hidapi needs Input Monitoring
+# permission for the responsible app; the USB transport avoids that gate.
+PERMISSION_HINT = (
+    "Grant Input Monitoring permission to the app running this server "
+    "(System Settings > Privacy & Security > Input Monitoring), or rely on the "
+    "USB transport fallback (attempted automatically; needs pyusb/libusb). "
+)
+
 
 class ConnectRequest(BaseModel):
     path: str = Field(..., description="Device path from GET /api/devices")
@@ -50,6 +59,16 @@ class DeviceManager:
             "devices": devices,
         }
 
+    def _connected_response(self, report_id: int, info: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+        return {
+            "ok": True,
+            "connected": True,
+            "transport": self._device.transport,
+            "report_id": report_id,
+            "device": info,
+            "hid_log": self._hid_log(),
+        }
+
     def connect(self, path: str) -> Dict[str, Any]:
         with self._lock:
             listed = MiniKeyboardDevice.enumerate()
@@ -66,20 +85,26 @@ class DeviceManager:
                 try:
                     _ = self._device.open(candidate)
                     report_id = self._device.detect_report_id()
-                    info = self._device.get_device_info()
-                    return {
-                        "ok": True,
-                        "connected": True,
-                        "report_id": report_id,
-                        "device": info,
-                        "hid_log": self._hid_log(),
-                    }
+                    return self._connected_response(report_id, self._device.get_device_info())
                 except Exception as exc:
                     errors.append({"path": candidate, "error": str(exc)})
                     self._device.close()
 
+            # Every hidapi open failed. macOS gates this device because it exposes
+            # keyboard/mouse HID collections, so fall back to the pyusb
+            # interrupt-OUT transport before giving up. hidapi remains the default;
+            # this branch is only reached when it is unusable.
+            hidapi_errors = list(errors)
+            try:
+                _ = self._device.open_usb()
+                report_id = self._device.detect_report_id()
+                return self._connected_response(report_id, self._device.get_device_info())
+            except Exception as exc:
+                errors.append({"path": "usb", "error": str(exc)})
+                self._device.close()
+
             details = json.dumps(errors)
-            lowered_errors = [item["error"].lower() for item in errors]
+            lowered_errors = [item["error"].lower() for item in hidapi_errors]
             permission_tokens = ("privilege violation", "not permitted", "permission denied", "not authorized")
             protocol_tokens = ("failed to detect report id", "setreport failed", "iohiddevicesetreport")
 
@@ -91,7 +116,7 @@ class DeviceManager:
             if all_permission:
                 raise MiniKeyboardError(
                     "macOS denied opening all candidate HID interfaces. "
-                    f"Details: {details}"
+                    f"{PERMISSION_HINT}Details: {details}"
                 )
 
             if any_protocol:
@@ -101,7 +126,7 @@ class DeviceManager:
                 )
 
             raise MiniKeyboardError(
-                "Failed to connect to MiniKeyboard on all candidate interfaces. "
+                "Failed to connect to MiniKeyboard on all candidate interfaces and the USB transport. "
                 f"Details: {details}"
             )
 
@@ -118,6 +143,7 @@ class DeviceManager:
             return {
                 "ok": True,
                 "connected": self._device.connected,
+                "transport": self._device.transport,
                 "report_id": self._device.report_id,
                 "hid_log": self._hid_log(limit=20),
             }

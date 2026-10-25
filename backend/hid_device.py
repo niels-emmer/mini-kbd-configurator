@@ -99,6 +99,11 @@ class MiniKeyboardDevice:
     def connected(self) -> bool:
         return self._device is not None or self._usb_device is not None
 
+    @property
+    def transport(self) -> Optional[str]:
+        """Active transport name: ``"hidapi"``, ``"usb"``, or ``None``."""
+        return self._transport
+
     def get_device_info(self) -> Optional[Dict[str, Any]]:
         if self._device_info is None:
             return None
@@ -302,6 +307,33 @@ class MiniKeyboardDevice:
             self._device_info["transport"] = self._transport
             return copy.deepcopy(self._device_info)
 
+    def open_usb(self) -> Dict[str, Any]:
+        """Open the device over the pyusb interrupt-OUT transport.
+
+        This is the fallback used when macOS denies a hidapi open: the device
+        advertises keyboard/mouse HID collections, so opening it through hidapi
+        requires Input Monitoring permission for the responsible app. The pyusb
+        path claims interface 1 and writes to the interrupt-OUT endpoint
+        directly, which is not gated the same way. Reuses the same transport
+        primitives (`_open_usb_transport` / `_release_usb_transport`) as the
+        report-ID probe fallback; it is only used on explicit request, never in
+        preference to a working hidapi handle.
+        """
+        with self._lock:
+            self.close()
+            self._open_usb_transport()
+            self._report_id = None
+            if self._device_info is None:
+                self._device_info = {
+                    "path": None,
+                    "path_display": f"usb:{VENDOR_ID:04x}:{PRODUCT_ID:04x}",
+                    "manufacturer": None,
+                    "product": None,
+                    "serial": None,
+                }
+            self._device_info["transport"] = self._transport
+            return copy.deepcopy(self._device_info)
+
     def close(self) -> None:
         with self._lock:
             if self._device is not None:
@@ -336,15 +368,7 @@ class MiniKeyboardDevice:
             # Fall back to direct USB interrupt-OUT transport if available.
             if self._transport != "usb":
                 try:
-                    if self._device is not None:
-                        try:
-                            self._device.close()
-                        except Exception:
-                            pass
-                        self._device = None
-                    self._open_usb_transport()
-                    if self._device_info is not None:
-                        self._device_info["transport"] = "usb"
+                    self.open_usb()
                     for report_id in REPORT_ID_CANDIDATES:
                         self.send_report(report_id, [0x00] * 8)
                         self._report_id = report_id
