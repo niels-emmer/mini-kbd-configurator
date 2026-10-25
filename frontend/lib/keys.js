@@ -77,7 +77,71 @@ export const KEY_CODES = {
   Left: 0x50,
   Down: 0x51,
   Up: 0x52,
+
+  // Editing / navigation cluster (HID usage page 0x07)
+  CapsLock: 0x39,
+  PrintScreen: 0x46,
+  ScrollLock: 0x47,
+  "Pause/Break": 0x48,
+  Insert: 0x49,
+  Home: 0x4a,
+  PageUp: 0x4b,
+  End: 0x4d,
+  PageDown: 0x4e,
+  Menu: 0x65,
+
+  // Numeric keypad
+  NumLock: 0x53,
+  "KP /": 0x54,
+  "KP *": 0x55,
+  "KP -": 0x56,
+  "KP +": 0x57,
+  "KP Enter": 0x58,
+  "KP 1": 0x59,
+  "KP 2": 0x5a,
+  "KP 3": 0x5b,
+  "KP 4": 0x5c,
+  "KP 5": 0x5d,
+  "KP 6": 0x5e,
+  "KP 7": 0x5f,
+  "KP 8": 0x60,
+  "KP 9": 0x61,
+  "KP 0": 0x62,
+  "KP .": 0x63,
+
+  // Extended function keys
+  F13: 0x68,
+  F14: 0x69,
+  F15: 0x6a,
+  F16: 0x6b,
+  F17: 0x6c,
+  F18: 0x6d,
+  F19: 0x6e,
+  F20: 0x6f,
+  F21: 0x70,
+  F22: 0x71,
+  F23: 0x72,
+  F24: 0x73,
 };
+
+// Highest HID keyboard usage id that fits in the single keycode byte the
+// firmware expects (see backend/hid_device.py set_single_key/set_keystroke).
+export const RAW_KEYCODE_MAX = 0xff;
+
+// Validate the "Other (raw HID code)" escape hatch. Returns the integer code
+// for a usable 0-255 value, or null when the input is empty / out of range so
+// callers can reject it instead of sending a bogus keycode.
+export function parseRawKeycode(value) {
+  const text = String(value ?? "").trim();
+  if (text === "") {
+    return null;
+  }
+  const num = Number(text);
+  if (!Number.isInteger(num) || num < 0 || num > RAW_KEYCODE_MAX) {
+    return null;
+  }
+  return num;
+}
 
 export const MEDIA_CODES = {
   "Play/Pause": [0xcd, 0x00],
