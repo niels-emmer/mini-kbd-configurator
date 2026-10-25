@@ -35,7 +35,15 @@
         <div class="row">
           <label>
             Layer
-            <input id="layerInput" type="number" min="1" max="3" value="1" />
+            <input
+              id="layerInput"
+              type="number"
+              min="1"
+              max="3"
+              step="1"
+              value="1"
+              aria-describedby="layerHint layerStatus"
+            />
           </label>
           <label>
             Lights
@@ -49,6 +57,16 @@
           <button id="readConfigBtn" type="button">Read Config</button>
           <button id="writeConfigBtn" type="button">Write Config</button>
           <button id="testBtn" type="button">Test Command</button>
+        </div>
+        <div class="row">
+          <span id="layerHint" class="hint">
+            Layers 1&ndash;3 are the three configuration slots stored on the device; the number above
+            is the slot this page reads, writes and exports. To switch the slot your keys use, press
+            the <strong>physical side button</strong> on the device.
+          </span>
+        </div>
+        <div class="row">
+          <span id="layerStatus" class="hint" role="status" aria-live="polite"></span>
         </div>
         <div class="row">
           <button id="exportProfileBtn" type="button">Export Profile</button>
